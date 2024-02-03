@@ -33,14 +33,14 @@ jobs:
           python-version: "3.x"
 
       - name: Install Dependencies
-        run: pip install pyyaml==5.4.1 pylzma==0.5.3
+        run: pip3 install pyyaml==5.4.1 pylzma==0.5.3
         working-directory: .github/actions
 
       - name: Build Magisk Release
         run: python build.py -vr all
 
       - name: Build Magisk Debug
-        run: python build.py -v all
+        run: python3 build.py -v all
 
       - name: Stop Gradle Daemon
         run: ./gradlew --stop
@@ -75,7 +75,7 @@ jobs:
           python-version: "3.x"
 
       - name: Build Debug
-        run: python build.py -v all
+        run: python3 build.py -v all
 
       - name: Stop Gradle Daemon
         run: ./gradlew --stop

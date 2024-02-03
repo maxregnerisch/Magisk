@@ -33,7 +33,7 @@ jobs:
           python-version: "3.x"
 
       - name: Install Dependencies
-        run: pip install -r requirements.txt
+        run: pip install pyyaml==5.4.1 pylzma==0.5.3
         working-directory: .github/actions
 
       - name: Build Magisk Release

@@ -112,6 +112,9 @@ def rm(file):
     except FileNotFoundError as e:
         pass
 
+# Define 'subparsers' before using it
+subparsers = parser.add_subparsers(title="actions")
+
 def rm_on_error(func, path, _):
     try:
         os.chmod(path, stat.S_IWRITE)

@@ -404,5 +404,6 @@ if hasattr(args, "func"):
     args.func()
 else:
     parser.print_help()
-if name == "main":
-main()
+
+if __name__ == "__main__":
+        main()

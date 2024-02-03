@@ -33,7 +33,7 @@ jobs:
           python-version: "3.x"
 
       - name: Install Dependencies
-        run: pip3 install pyyaml pylzma setuptools python-xz
+        run: pip3 install pyyaml pylzma setuptools python-xz && apt install xz
         working-directory: .github/actions
 
       - name: Build Magisk Release

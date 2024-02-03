@@ -665,94 +665,71 @@ def build_all(args):
     build_binary(args)
     build_app(args)
 
-def build_binary(args):
-    # code to build binaries
 
-def build_app(args):
-    # code to build the Magisk app
-
-def run_cargo_cmd(args):
-    # code to run cargo with proper environment
-
-def build_stub(args):
-    # code to build the stub app
-
-def setup_avd(args):
-    # code to setup AVD for development
-
-def patch_avd_ramdisk(args):
-    # code to patch AVD ramdisk.img
-
-def cleanup(args):
-    # code to cleanup
-
-def setup_ndk(args):
-    # code to setup Magisk NDK
-
-def load_config(args):
-    # code to load config
-
-# Create the parser
 parser = argparse.ArgumentParser(description="Magisk build script")
-
-# Set default function
 parser.set_defaults(func=lambda x: None)
-
-# Add arguments
-parser.add_argument("-r", "--release", action="store_true", help="compile in release mode")
+parser.add_argument(
+    "-r", "--release", action="store_true", help="compile in release mode"
+)
 parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
-parser.add_argument("-c", "--config", default="config.prop", help="custom config file (default: config.prop)")
-
-# Create subparsers
+parser.add_argument(
+    "-c",
+    "--config",
+    default="config.prop",
+    help="custom config file (default: config.prop)",
+)
 subparsers = parser.add_subparsers(title="actions")
 
-# Create parser for "all" action
 all_parser = subparsers.add_parser("all", help="build everything")
 all_parser.set_defaults(func=build_all)
 
-# Create parser for "binary" action
 binary_parser = subparsers.add_parser("binary", help="build binaries")
-binary_parser.add_argument("target", nargs="*", help="targets")
+binary_parser.add_argument(
+    "target",
+    nargs="*",
+    help=f"{', '.join(support_targets)}, \
+    or empty for defaults ({', '.join(default_targets)})",
+)
 binary_parser.set_defaults(func=build_binary)
 
-# Create parser for "cargo" action
 cargo_parser = subparsers.add_parser("cargo", help="run cargo with proper environment")
 cargo_parser.add_argument("commands", nargs=argparse.REMAINDER)
 cargo_parser.set_defaults(func=run_cargo_cmd)
 
-# Create parser for "app" action
 app_parser = subparsers.add_parser("app", help="build the Magisk app")
 app_parser.set_defaults(func=build_app)
 
-# Create parser for "stub" action
 stub_parser = subparsers.add_parser("stub", help="build the stub app")
 stub_parser.set_defaults(func=build_stub)
 
-# Create parser for "emulator" action
 avd_parser = subparsers.add_parser("emulator", help="setup AVD for development")
-avd_parser.add_argument("-s", "--skip", action="store_true", help="skip building binaries and the app")
+avd_parser.add_argument(
+    "-s", "--skip", action="store_true", help="skip building binaries and the app"
+)
 avd_parser.set_defaults(func=setup_avd)
 
-# Create parser for "avd_patch" action
 avd_patch_parser = subparsers.add_parser("avd_patch", help="patch AVD ramdisk.img")
 avd_patch_parser.add_argument("ramdisk", help="path to ramdisk.img")
-avd_patch_parser.add_argument("-s", "--skip", action="store_true", help="skip building binaries and the app")
+avd_patch_parser.add_argument(
+    "-s", "--skip", action="store_true", help="skip building binaries and the app"
+)
 avd_patch_parser.set_defaults(func=patch_avd_ramdisk)
 
-# Create parser for "clean" action
 clean_parser = subparsers.add_parser("clean", help="cleanup")
-clean_parser.add_argument("target", nargs="*", help="targets")
+clean_parser.add_argument(
+    "target", nargs="*", help="native, cpp, rust, java, or empty to clean all"
+)
 clean_parser.set_defaults(func=cleanup)
 
-# Create parser for "ndk" action
 ndk_parser = subparsers.add_parser("ndk", help="setup Magisk NDK")
 ndk_parser.set_defaults(func=setup_ndk)
 
-# Parse the arguments
-args = parser.parse_args()
+if len(sys.argv) == 1:
+    parser.print_help()
+    sys.exit(1)
 
-# Load the config
+args = parser.parse_args()
 load_config(args)
 
-# Call the corresponding function
+# Call corresponding functions
 args.func(args)

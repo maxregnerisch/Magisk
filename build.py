@@ -336,6 +336,10 @@ def build_binary(args):
     if clean:
         clean_elf()
 
+default_targets = ["magisk", "magiskinit", "magiskboot", "magiskpolicy", "busybox"]
+support_targets = default_targets + ["resetprop"]
+rust_targets = ["magisk", "magiskinit", "magiskboot", "magiskpolicy"]
+
     # BusyBox is built with different libc
 
     if "busybox" in args.target:

@@ -392,8 +392,6 @@ def main():
     build_parser.set_defaults(func=build_resetprop)
 build_parser.set_defaults(func=build_resetprop)
 
-scss
-Copy code
 clean_parser = subparsers.add_parser(
     "clean", help="Clean up build artifacts"
 )

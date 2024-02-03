@@ -112,8 +112,35 @@ def rm(file):
     except FileNotFoundError as e:
         pass
 
-# Define 'subparsers' before using it
+# Create the main parser
+parser = argparse.ArgumentParser(description="Magisk build script")
+parser.set_defaults(func=lambda x: None)
+parser.add_argument(
+    "-r", "--release", action="store_true", help="compile in release mode"
+)
+parser.add_argument("-v", "--verbose", action="store_true", help="verbose output")
+parser.add_argument(
+    "-c",
+    "--config",
+    default="config.prop",
+    help="custom config file (default: config.prop)",
+)
+
+# Add subparsers
 subparsers = parser.add_subparsers(title="actions")
+
+# Subparser for building resetprop
+build_parser = subparsers.add_parser("build_resetprop", help="build resetprop")
+build_parser.set_defaults(func=build_resetprop)
+
+# ... (The rest of your script remains unchanged)
+
+# Ensure to call parse_args() to process command-line arguments
+args = parser.parse_args()
+load_config(args)
+
+# Call corresponding functions
+args.func(args)
 
 def rm_on_error(func, path, _):
     try:

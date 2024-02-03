@@ -336,6 +336,10 @@ def build_resetprop():
         ]
     )
 
+ #Subparser for building resetprop
+build_parser = subparsers.add_parser("build_resetprop", help="build resetprop")
+build_parser.set_defaults(func=build_resetprop)
+
 def create_flashable_zip():
     header("Creating Flashable ZIP")
     magisk_file = op.join(config["outdir"], "magisk", "release", "magisk.apk")

@@ -2,8 +2,7 @@ name: Magisk Build
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
     paths:
       - "app/**"
       - "native/**"
@@ -13,71 +12,73 @@ on:
       - "gradle.properties"
       - ".github/workflows/build.yml"
   pull_request:
-    branches:
-      - master
+    branches: [master]
   workflow_dispatch:
 
 jobs:
   build:
     name: Build Magisk artifacts
     runs-on: ubuntu-latest
+    env:
+      SCCACHE_DIRECT: false
     strategy:
       fail-fast: false
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Check out
+        uses: actions/checkout@v4
         with:
-          python-version: "3.x"
+          submodules: "recursive"
+          fetch-depth: 0
 
-      - name: Install Dependencies
-        run: pip3 install pyyaml pylzma setuptools python-xz 
-        working-directory: .github/actions
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
-      - name: Build Magisk Release
-        run: python build.py -vr all
+      - name: Build release
+        run: ./build.py -vr all
 
-      - name: Build Magisk Debug
-        run: python3 build.py -v all
+      - name: Build debug
+        run: ./build.py -v all
 
-      - name: Stop Gradle Daemon
+      - name: Stop gradle daemon
         run: ./gradlew --stop
 
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.sha }}
           path: out
+          compression-level: 9
 
-      - name: Upload Mapping and Native Debug Symbols
-        uses: actions/upload-artifact@v2
+      - name: Upload mapping and native debug symbols
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.sha }}-symbols
           path: app/build/outputs
+          compression-level: 9
 
   test-build:
     name: Test building on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      SCCACHE_DIRECT: false
     strategy:
       fail-fast: false
       matrix:
         os: [windows-latest, macos-14]
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Check out
+        uses: actions/checkout@v4
         with:
-          python-version: "3.x"
+          submodules: "recursive"
+          fetch-depth: 0
 
-      - name: Build Debug
-        run: python3 build.py -v all
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
-      - name: Stop Gradle Daemon
+      - name: Build debug
+        run: python build.py -v all
+
+      - name: Stop gradle daemon
         run: ./gradlew --stop
 
   test:
@@ -90,16 +91,18 @@ jobs:
         api: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34]
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python 3
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: "3.x"
 
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v2
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
         with:
           name: ${{ github.sha }}
           path: out
@@ -110,5 +113,5 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: AVD Test
+      - name: AVD test
         run: scripts/avd_test.sh ${{ matrix.api }}

@@ -5,6 +5,7 @@ import subprocess
 import lzma
 import lzma
 import os.path as op
+import zipfile
 
 def move(source, target):
     try:
@@ -231,7 +232,7 @@ def write_if_different(file_name, text):
             f.write(text)
 
 
-def generate_binary_dump(src, var_name, compressor=xz):
+def generate_binary_dump(src, var_name, compressor=zip):
     out_str = f"constexpr unsigned char {var_name}[] = {{"
     for i, c in enumerate(compressor(src.read())):
         if i % 16 == 0:
